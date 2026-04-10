@@ -1,5 +1,7 @@
 import streamlit as st
 import pandas as pd
+import altair as alt
+
 
 fb = pd.read_csv('fb_summary.csv') 
 gl = pd.read_csv('gl_summary.csv')
@@ -12,6 +14,26 @@ kpi = pd.read_csv('platform_level_kpi.csv')
 st.set_page_config(page_title="Marketing KPI Dashboard", layout="wide")
 st.title("Marketing Platform KPI Dashboard")
 st.caption("Comparative view of Facebook, Google & TikTok ad performance")
+
+# ── Platform color scheme ────────────────────────────────────────────────────
+PLATFORM_COLORS = alt.Scale(
+    domain=["Facebook", "Google", "TikTok"],
+    range=["#1877F2", "#FBBC05", "#EE1D52"],  # blue, yellow, red
+)
+
+def kpi_bar_chart(data, metric, title):
+    """Reusable Altair bar chart with platform colors."""
+    return (
+        alt.Chart(data)
+        .mark_bar(cornerRadiusTopLeft=4, cornerRadiusTopRight=4)
+        .encode(
+            x=alt.X("platform:N", sort=["Facebook", "Google", "TikTok"], title=None),
+            y=alt.Y(f"{metric}:Q", title=title),
+            color=alt.Color("platform:N", scale=PLATFORM_COLORS, legend=None),
+            tooltip=["platform", alt.Tooltip(f"{metric}:Q", format=",.2f")],
+        )
+        .properties(height=350)
+    )
 
 # ── Metric cards (one column per platform) ───────────────────────────────────
 st.subheader("Platform Overview")
@@ -43,21 +65,36 @@ st.dataframe(
 )
 
 # ── Comparison bar charts ────────────────────────────────────────────────────
+# st.divider()
+# st.subheader("Comparison Charts")
+
+# chart_col1, chart_col2 = st.columns(2)
+# with chart_col1:
+#     st.markdown("**Total Conversions**")
+#     st.bar_chart(kpi.set_index("platform")["total_conversions"])
+# with chart_col2:
+#     st.markdown("**Cost per Click ($)**")
+#     st.bar_chart(kpi.set_index("platform")["cost_per_conversion"])
+
+# chart_col3, chart_col4 = st.columns(2)
+# with chart_col3:
+#     st.markdown("**Total Cost ($)**")
+#     st.bar_chart(kpi.set_index("platform")["total_cost"])
+# with chart_col4:
+#     st.markdown("**Clicks per Conversion**")
+#     st.bar_chart(kpi.set_index("platform")["clicks_to_conversion"])
+# ── Comparison bar charts ────────────────────────────────────────────────────
 st.divider()
 st.subheader("Comparison Charts")
 
 chart_col1, chart_col2 = st.columns(2)
 with chart_col1:
-    st.markdown("**Total Conversions**")
-    st.bar_chart(kpi.set_index("platform")["total_conversions"])
+    st.altair_chart(kpi_bar_chart(kpi, "total_conversions", "Total Conversions"), use_container_width=True)
 with chart_col2:
-    st.markdown("**Cost per Click ($)**")
-    st.bar_chart(kpi.set_index("platform")["cost_per_conversion"])
+    st.altair_chart(kpi_bar_chart(kpi, "cost_per_conversion", "Cost per Conversion ($)"), use_container_width=True)
 
 chart_col3, chart_col4 = st.columns(2)
 with chart_col3:
-    st.markdown("**Total Cost ($)**")
-    st.bar_chart(kpi.set_index("platform")["total_cost"])
+    st.altair_chart(kpi_bar_chart(kpi, "total_cost", "Total Cost ($)"), use_container_width=True)
 with chart_col4:
-    st.markdown("**Clicks per Conversion**")
-    st.bar_chart(kpi.set_index("platform")["clicks_to_conversion"])
+    st.altair_chart(kpi_bar_chart(kpi, "clicks_to_conversion", "Clicks per Conversion"), use_container_width=True)
