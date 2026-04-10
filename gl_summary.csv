@@ -1,0 +1,5 @@
+,campaign_name,total_conversions,total_cost,total_clicks,total_impressions,clicks_to_conversion,impressions_to_conversion,cost_per_click
+0,Display_Remarketing,345,3352.5,12379,3396726,35.88,9845.58,0.27
+1,Search_Brand_Terms,1445,7368.1,38603,740093,26.71,512.18,0.19
+2,Search_Generic_Terms,627,15548.9,24162,1215240,38.54,1938.18,0.64
+3,Shopping_All_Products,1801,11416.7,62446,1871485,34.67,1039.14,0.18
